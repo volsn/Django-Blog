@@ -1,0 +1,167 @@
+from flask import render_template, request, Blueprint, abort, url_for, redirect
+from flask_login import current_user
+from miloblog import db
+from miloblog.models import BlogPost, Comment, BlogCategory, UserStatus
+from miloblog.blog_posts.forms import LeaveComment, EditCommentForm, LeaveReplyForm
+from miloblog.users.forms import SubscribeForm
+
+blogs = Blueprint('blogs', __name__)
+
+
+@blogs.route('/blogs/<pk>', methods=['GET', 'POST'])
+def blog_post(pk):
+    post = BlogPost.query.get_or_404(pk)
+    selected_posts = BlogPost.query.order_by(BlogPost.date.desc()).limit(2)
+
+    form = LeaveComment()
+    if form.validate_on_submit():
+        if current_user.is_authenticated:
+            comment = Comment(user_id=current_user.id,
+                              blog=post.id,
+                              text=form.text.data)
+
+            if current_user.status == UserStatus.admin:
+                comment.approved = True
+
+            db.session.add(comment)
+            db.session.commit()
+
+    elif request.method == 'GET' and current_user.is_authenticated:
+        form.name.data = current_user.first_name + ' ' + current_user.last_name
+        form.email.data = current_user.email
+
+    comments = Comment.query.order_by(Comment.date.asc()).filter_by(blog=post.id).all()
+    subscription_form = SubscribeForm()
+    edit_form = EditCommentForm()
+    reply_form = LeaveReplyForm()
+
+    return render_template('blog_posts/post.html',
+                           post=post,
+                           comments=comments,
+                           categories=BlogCategory,
+                           selected_posts=selected_posts,
+                           form=form,
+                           edit_form=edit_form,
+                           reply_form=reply_form,
+                           subscription_form=subscription_form)
+
+
+@blogs.route('/blogs/category/<cat>')
+def posts_category(cat):
+    page = request.args.get('page', 1, type=int)
+    blog_posts = BlogPost.query.filter_by(category=cat).order_by(BlogPost.date.desc()) \
+        .paginate(page=page, per_page=6)
+    selected_posts = BlogPost.query.order_by(BlogPost.date.desc()).limit(2)
+    subscription_form = SubscribeForm()
+    return render_template('blog_posts/posts_category.html',
+                           blog_posts=blog_posts,
+                           current_category=cat.replace('_and_', ' & '),
+                           categories=BlogCategory,
+                           selected_posts=selected_posts,
+                           subscription_form=subscription_form)
+
+
+@blogs.app_template_filter()
+def find_reply(comment):
+    reply = Comment.query.filter(Comment.reply_to == comment.id).first()
+    return reply
+
+
+@blogs.route('/comment/approve/<pk>')
+def approve(pk):
+    if not current_user.is_authenticated or current_user.status != UserStatus.admin:
+        abort(403)
+
+    comment = Comment.query.get_or_404(pk)
+    comment.approved = True
+    db.session.commit()
+
+    next_ = request.args.get('next', None)
+    if not next_:
+        next_ = url_for('core.index')
+
+    return redirect(next_)
+
+
+@blogs.route('/comment/remove/<pk>')
+def remove(pk):
+    if not current_user.is_authenticated or current_user.status != UserStatus.admin:
+        abort(403)
+
+    comment = Comment.query.get_or_404(pk)
+    comment.approved = False
+    db.session.commit()
+
+    next_ = request.args.get('next', None)
+    if not next_:
+        next_ = url_for('core.index')
+
+    return redirect(next_)
+
+
+@blogs.app_template_filter()
+def length_comments(comments):
+    if current_user.is_authenticated and current_user.status == UserStatus.admin:
+        return len(comments)
+    return len([comment for comment in comments if comment.approved])
+
+
+@blogs.route('/comment/delete/<pk>', methods=['GET', 'POST'])
+def delete_comment(pk):
+    comment = Comment.query.get_or_404(pk)
+    if not current_user.is_authenticated or comment.author != current_user:
+        abort(403)
+
+    db.session.delete(comment)
+    db.session.commit()
+
+    next_ = request.args.get('next', None)
+    if not next_:
+        next_ = url_for('core.index')
+
+    return redirect(next_)
+
+
+@blogs.route('/comment/edit/<pk>', methods=['POST'])
+def edit_comment(pk):
+    comment = Comment.query.get_or_404(pk)
+    if not current_user.is_authenticated or comment.author != current_user:
+        abort(403)
+
+    form = EditCommentForm()
+    if form.validate_on_submit():
+        comment.text = form.text.data
+        db.session.commit()
+
+        next_ = request.args.get('next', None)
+        if not next_:
+            next_ = url_for('core.index')
+        return redirect(next_)
+
+    return render_template('core/message.html',
+                           message='Couldn\'t update your comment. Somethings went wrong.')
+
+
+@blogs.route('/comment/leave_reply/<pk>', methods=['POST'])
+def leave_reply(pk):
+    comment = Comment.query.get_or_404(pk)
+    if not current_user.is_authenticated or current_user.status != UserStatus.admin:
+        abort(403)
+
+    form = LeaveReplyForm()
+    if form.validate_on_submit():
+        reply = Comment(user_id=current_user.id,
+                        blog=comment.blog,
+                        text=form.text.data,
+                        reply_to=comment.id,
+                        approved=True)
+        db.session.add(reply)
+        db.session.commit()
+
+        next_ = request.args.get('next', None)
+        if not next_:
+            next_ = url_for('core.index')
+        return redirect(next_)
+
+    return render_template('core/message.html',
+                           message='Couldn\'t leave reply. Somethings went wrong.')

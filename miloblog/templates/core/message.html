@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <style>
+        footer
+        {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <main class="main pt-4">
+        <div class="container">
+            <article class="card card-outline mb-4">
+                <div class="card-body">
+                    <header>
+                        <h4 class="card-title">{{ message }}</h4>
+                    </header>
+                </div>
+            </article>
+        </div>
+    </main>
+{% endblock %}
+
+
+{# Override unneeded blocks #}
+
+{% block newsletter %}
+{% endblock %}
+
+{% block instagram %}
+{% endblock %}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="Flask">
+    <option name="enabled" value="true" />
+  </component>
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <excludeFolder url="file://$MODULE_DIR$/origin" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 3.9 (fucked-up-flask) (2)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+  <component name="TemplatesService">
+    <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
+    <option name="TEMPLATE_FOLDERS">
+      <list>
+        <option value="$MODULE_DIR$/miloblog/templates" />
+        <option value="$MODULE_DIR$/miloblog/templates/blog_posts" />
+        <option value="$MODULE_DIR$/miloblog/templates/error_pages" />
+        <option value="$MODULE_DIR$/miloblog/templates/core" />
+        <option value="$MODULE_DIR$/miloblog/templates/users" />
+      </list>
+    </option>
+  </component>
+</module>

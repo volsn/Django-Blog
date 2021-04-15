@@ -1,0 +1,208 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<main class="main pt-4">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-9">
+				<article class="card mb-4">
+					<header class="card-header text-center">
+						<div class="card-meta">
+							<time class="timeago" datetime="{{ post.date.strftime('%Y-%m-%d %H:%M') }}">{{ post.date.strftime('%d %B %Y') }}</time> in
+							<a href="{{ url_for('blogs.posts_category', cat=post.category.name) }}">{{ post.category.value }}</a>
+						</div>
+						<h1 class="card-title">{{ post.title }}</h1>
+					</header>
+					<img class="card-img" src="{{ url_for('static', filename='articles/' + post.main_image) }}" alt="" />
+					<div class="card-body">
+
+                        {{ post.text|safe }}
+                        <hr>
+
+                        {% if comments|length_comments == 0 %}
+						    <h3>No comments</h3>
+                        {% elif comments|length_comments == 1 %}
+                            <h3>1 Comment</h3>
+                        {% else %}
+                            <h3>{{ comments|length_comments }} Comments</h3>
+                        {% endif %}
+
+                        {% for comment in comments %}
+
+                            {% if (current_user.is_authenticated and current_user.status.value == 'admin') or comment.approved or comment.author == current_user %}
+
+                                {% set reply = comment|find_reply %}
+                                <div class="media mb-3">
+                                <div class="text-center">
+                                    <img class="mr-3 rounded-circle" src="{{ url_for('static', filename='profile_pics/' + comment.author.profile_image) }}" alt="Lucy" width="100" height="100">
+                                        <h6 class="mt-1 mb-0 mr-3">{{ comment.author }}</h6>
+                                    </div>
+                                    <div class="media-body">
+                                        <p class="mt-3 mb-2">{{ comment.text }}</p>
+
+                                        {% if not comment.approved and comment.author == current_user %}
+                                            <p class="mt-3 mb-2" style="font-size: 12px; color: dimgray;"><span class="fa fa-lightbulb"></span> Your comment is not displayed until it is approved.</p>
+                                        {% endif %}
+
+                                        <time class="timeago" datetime="{{ comment.date.strftime('%Y-%m-%d %H:%M') }}">{{ comment.date.strftime('%d %B %Y') }}</time>
+                                        <div class="float-right" href="#">
+                                            {% if comment.author == current_user %}
+
+                                                <!--<span class="fa fa-edit"></span> Edit &nbsp;-->
+                                                <a href="" data-toggle="modal" data-target="#edit_modal_{{ comment.id }}"><span class="fa fa-edit"></span> Edit &nbsp;</a>
+                                                <a href="" data-toggle="modal" data-target="#del_modal_{{ comment.id }}"><span class="fa fa-trash-alt"></span> Delete</a>
+
+                                            {% elif current_user.is_authenticated and current_user.status.value == 'admin' %}
+                                                {% if comment.author.status.value != 'banned' %}
+                                                    <a href="{{ url_for('users.ban', pk=comment.author.id, next=url_for(request.endpoint, pk=post.id)) }}"><span class="fa fa-ban"></span> Ban User &nbsp;</a>
+                                                {% else %}
+                                                    <a href="{{ url_for('users.unban', pk=comment.author.id, next=url_for(request.endpoint, pk=post.id)) }}"><span class="fa fa-gavel"></span> Unban User &nbsp;</a>
+                                                {% endif %}
+
+                                                {% if not reply %}
+                                                    <a href="" data-toggle="modal" data-target="#reply_modal_{{ comment.id }}"><span class="fa fa-reply"></span> Reply &nbsp;</a>
+                                                {% endif %}
+
+                                                    {% if not comment.approved %}
+                                                        <a href="{{ url_for('blogs.approve', pk=comment.id, next=url_for(request.endpoint, pk=post.id)) }}"><span class="fa fa-check"></span> Approve &nbsp;</a></a>
+                                                    {% else %}
+                                                        <a href="{{ url_for('blogs.remove', pk=comment.id, next=url_for(request.endpoint, pk=post.id)) }}"><span class="fa fa-lock"></span> Hide &nbsp;</a></a>
+                                                    {% endif %}
+                                                {% endif %}
+                                        </div>
+
+                                        {% if reply %}
+                                            <div class="media mt-3">
+                                                <div class="pr-3 text-center">
+                                                    <img class="mr-3 rounded-circle" src="{{ url_for('static', filename='profile_pics/' + reply.author.profile_image) }}" alt="John" width="100" height="100">
+                                                    <h6 class="mt-1 mb-0 mr-3">{{ reply.author }}</h6>
+                                                </div>
+                                                <div class="media-body">
+                                                    <p class="mt-3 mb-2">{{ reply.text }}</p>
+                                                    <time class="timeago" datetime="{{ reply.date.strftime('%Y-%m-%d %H:%M') }}">{{ reply.date.strftime('%d %B %Y') }}</time>
+                                                    {% if current_user.is_authenticated and current_user.status.value == 'admin' %}
+                                                        <div class="float-right" href="#">
+                                                            <span class="fa fa-edit"></span> Edit &nbsp;
+                                                            <span class="fa fa-trash-alt"></span> Delete &nbsp;
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                        <div class="mt-5">
+                            {% if current_user.is_authenticated and current_user.status.value == 'banned' %}
+                                <p style="color: red;"><span class="fa fa-user-lock"></span> Account suspended. You're not allowed to comment. Please
+                                            <a href="{{ url_for('core.contact') }}">contact</a> admin for details.</p>
+                            {% else %}
+                                <form method="POST">
+                                    {{ form.hidden_tag() }}
+                                    <h5>Write a response</h5>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            {{ form.name(class="form-control", id="name", placeholder="Your name") }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{ form.email(class="form-control", id="email", placeholder="Your email") }}
+                                        </div>
+                                    </div>
+                                    {{ form.text(class="form-control mt-3", rows="3", placeholder="Write a response..") }}
+                                    {% if current_user.is_authenticated %}
+                                        {{ form.submit(class="btn btn-success mt-3") }}
+                                    {% else %}
+                                        <a class="btn btn-success mt-3") href="{{ url_for('users.login', next=url_for(request.endpoint, pk=post.id)) }}">Login to leave comment</a>
+                                    {% endif %}
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+                <!-- /.card -->
+            </div>
+
+            {% include 'sidebar.html' %}
+
+        </div>
+    </div>
+
+    {% for comment in comments %}
+        <div class="modal fade" id="del_modal_{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="del{{ comment.id }}ModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the comment? <br>
+                        This action cannot be reversed
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <form action="{{ url_for('blogs.delete_comment', pk=comment.id, next=url_for(request.endpoint, pk=post.id)) }}" method="POST">
+                            <input class="btn btn-danger" type="submit" value="Delete">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="edit_modal_{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="edit{{ comment.id }}ModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Edit Comment</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ url_for('blogs.edit_comment', pk=comment.id, next=url_for(request.endpoint, pk=post.id)) }}" method="POST">
+                        {{ edit_form.hidden_tag() }}
+                        <div class="modal-body">
+                            <textarea class="form-control" id="text" rows="4" placeholder="Message" style="margin-top: 0px; margin-bottom: 0px; height: 98px;" name="text" cols="30">{{ comment.text }}</textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                {{ edit_form.submit(class="btn btn-primary", value="Save") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="reply_modal_{{ comment.id }}" tabindex="-1" role="dialog" aria-labelledby="reply{{ comment.id }}ModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Leave Reply</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <form action="{{ url_for('blogs.leave_reply', pk=comment.id, next=url_for(request.endpoint, pk=post.id)) }}" method="POST">
+                        {{ reply_form.hidden_tag() }}
+                        <div class="modal-body">
+                            {{ reply_form.text(class="form-control", id="text", rows="4", placeholder="Reply", style="margin-top: 0px; margin-bottom: 0px; height: 98px;", cols="30") }}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                {{ reply_form.submit(class="btn btn-primary", value="Leave") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+
+
+</main>
+
+{% endblock %}

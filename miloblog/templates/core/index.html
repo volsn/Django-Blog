@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block main %}
+<main class="main pt-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-6">
+
+                        {% for post in blog_posts.items[0:][::2] %}
+                            {% include 'article_preview.html' %}
+                        {% endfor %}
+
+                    </div>
+                    <div class="col-md-6">
+
+                        {% for post in blog_posts.items[1:][::2] %}
+                            {% include 'article_preview.html' %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            {% include 'sidebar.html' %}
+
+        </div>
+
+        <br>
+        {% set current_route = 'core.index' %}
+        {% include 'pagination.html' %}
+
+    </div>
+</main>
+{% endblock %}

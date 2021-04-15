@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+    <style>
+        footer
+        {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+
+{% block main %}
+    <main class="main pt-4">
+        <div class="container">
+            <article class="card card-outline mb-4">
+                <div class="card-body">
+                    <h1 style="font-size: 40px;">403. Access Denied</h1>
+                </div>
+            </article>
+        </div>
+    </main>
+{% endblock %}
+
+{# Override unneeded blocks #}
+
+{% block newsletter %}
+{% endblock %}
+
+{% block instagram %}
+{% endblock %}

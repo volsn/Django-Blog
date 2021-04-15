@@ -1,0 +1,44 @@
+<div class="col-md-3 ml-auto">
+    <aside class="sidebar">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">About</h3>
+                <p class="card-text">Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. </p>
+            </div>
+        </div>
+        <!-- /.card -->
+    </aside>
+    <aside class="sidebar sidebar-sticky">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Tags</h3>
+
+                {% for category in categories %}
+                    {% if category.value != None %}
+                        <a class="btn btn-light btn-sm mb-1" href="{{ url_for('blogs.posts_category', cat=category.name) }}">{{ category.value }}</a>
+                    {% endif %}
+                {% endfor %}
+
+            </div>
+        </div>
+        <!-- /.card -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3 class="card-title">Latest stories</h3>
+                <br>
+
+                {% for selected_post in selected_posts %}
+                    <a href="{{ url_for('blogs.blog_post', pk=selected_post.id) }}" class="d-inline-block">
+                        <h4 class="h6">{{ selected_post.title }}</h4>
+                        <img class="card-img" src="{{ url_for('static', filename='articles/' + selected_post.main_image) }}" alt="" />
+                    </a>
+                    <time class="timeago" datetime="{{ selected_post.date.strftime('%Y-%m-%d %H:%M') }}">{{ selected_post.date.strftime('%d %B %Y') }}</time> in {{ selected_post.category.value }}
+                    <br>
+                    <br>
+                {% endfor %}
+
+            </div>
+        </div>
+        <!-- /.card -->
+    </aside>
+</div>

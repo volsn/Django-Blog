@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block main %}
+<main class="main pt-4">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-9">
+
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ url_for('core.index') }}">All</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ current_category|capitalize }}</li>
+                    </ol>
+                </nav>
+
+                <div class="row">
+                    <div class="col-md-6">
+
+                        {% for post in blog_posts.items[0:][::2] %}
+                            {% include 'article_preview.html' %}
+                        {% endfor %}
+
+                    </div>
+                    <div class="col-md-6">
+
+                        {% for post in blog_posts.items[1:][::2] %}
+                            {% include 'article_preview.html' %}
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+
+            {% include 'sidebar.html' %}
+
+        </div>
+
+        {% set current_route = 'blogs.posts_category' %}
+        {% set cat=current_category %}
+        {% include 'pagination.html' %}
+
+    </div>
+</main>
+{% endblock %}
