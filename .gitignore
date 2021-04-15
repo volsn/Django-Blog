@@ -62,5 +62,5 @@ target/
 
 
 ### Django ###
-.env
-miloblog/data.sqlite
+# .env
+# miloblog/data.sqlite
