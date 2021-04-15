@@ -10,4 +10,4 @@ admin.add_view(ModelView(Comment, db.session))
 admin.add_view(ModelView(NewsletterSubscription, db.session))
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
