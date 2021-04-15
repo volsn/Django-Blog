@@ -30,7 +30,7 @@ def blog_post(pk):
         form.name.data = current_user.first_name + ' ' + current_user.last_name
         form.email.data = current_user.email
 
-    comments = Comment.query.order_by(Comment.date.asc()).filter_by(blog=post.id).all()
+    comments = Comment.query.filter_by(blog=post.id, reply_to=-1).order_by(Comment.date.asc()).all()
     subscription_form = SubscribeForm()
     edit_form = EditCommentForm()
     reply_form = LeaveReplyForm()
