@@ -27,7 +27,7 @@
                 <h3 class="card-title">Latest stories</h3>
                 <br>
 
-                {% for selected_post in selected_posts %}
+                {% for selected_post in latest_posts %}
                     <a href="{{ url_for('blogs.blog_post', pk=selected_post.id) }}" class="d-inline-block">
                         <h4 class="h6">{{ selected_post.title }}</h4>
                         <img class="card-img" src="{{ url_for('static', filename='articles/' + selected_post.main_image) }}" alt="" />

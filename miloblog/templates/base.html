@@ -25,61 +25,59 @@
 </head>
 <body>
 
-  {% block header %}
-      <header>
-        <nav class="navbar navbar-expand-md navbar-light bg-white absolute-top">
-          <div class="container">
+    {% block header %}
+        <header>
+            <nav class="navbar navbar-expand-md navbar-light bg-white absolute-top">
+                <div class="container">
+                    <button class="navbar-toggler order-2 order-md-1" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbar-left navbar-right" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                    </button>
+                    {% if current_user|is_admin %}
+                        <a class="navbar-brand mx-auto order-1 order-md-3" href="{{ url_for('core.index') }}">Milø<span style="font-size: 30px; color: goldenrod;">.admin<span class="fa fa-crown"></span></span></a>
+                    {% else %}
+                        <a class="navbar-brand mx-auto order-1 order-md-3" href="{{ url_for('core.index') }}">Milø</a>
+                    {% endif %}
+                    <div class="collapse navbar-collapse order-4 order-md-4" id="navbar-right">
+                        <ul class="navbar-nav ml-auto">
+                            {% if not current_user|is_admin %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.about') }}">About</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('core.contact') }}">Contact</a>
+                                </li>
+                            {% endif %}
+                            {% if current_user.is_authenticated %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('users.logout') }}">Logout</a>
+                                </li>
+                                {% if current_user|is_admin %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" style="color: goldenrod;" href="{{ url_for('admin.index') }}">Admin Panel</a>
+                                    </li>
+                                {% else %}
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ url_for('users.account') }}">Account</a>
+                                    </li>
+                                {% endif %}
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url_for('users.login') }}">Login</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                        <form class="form-inline" role="search">
+                            <input class="search js-search form-control form-control-rounded mr-sm-2" type="text" title="Enter search query here.." placeholder="Search.." aria-label="Search">
+                        </form>
+                    </div>
+                </div>
+            </nav>
+        </header>
+    {% endblock %}
 
-            <button class="navbar-toggler order-2 order-md-1" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbar-left navbar-right" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
+    {% block main %}
 
-            {% if current_user.is_authenticated and current_user.status.value == 'admin_' %}
-                <a class="navbar-brand mx-auto order-1 order-md-3" href="{{ url_for('core.index') }}">Milø<span style="font-size: 30px; color: goldenrod;">.admin<span class="fa fa-crown"></span></span></a>
-            {% else %}
-                <a class="navbar-brand mx-auto order-1 order-md-3" href="{{ url_for('core.index') }}">Milø</a>
-            {% endif %}
-
-
-            <div class="collapse navbar-collapse order-4 order-md-4" id="navbar-right">
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('core.about') }}">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('core.contact') }}">Contact</a>
-                </li>
-                  {% if current_user.is_authenticated %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('users.logout') }}">Logout</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('users.account') }}">Account</a>
-                    </li>
-                      {% if current_user.status.value == 'admin_' %}
-                          <li class="nav-item">
-                              <a class="nav-link" style="color: goldenrod;" href="{{ url_for('admin.index') }}">Admin Panel</a>
-                          </li>
-                      {% endif %}
-                  {% else %}
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('users.login') }}">Login</a>
-                    </li>
-                  {% endif %}
-
-              </ul>
-              <form class="form-inline" role="search">
-                <input class="search js-search form-control form-control-rounded mr-sm-2" type="text" title="Enter search query here.." placeholder="Search.." aria-label="Search">
-              </form>
-            </div>
-          </div>
-        </nav>
-      </header>
-  {% endblock %}
-
-  {% block main %}
-
-  {% endblock %}
+    {% endblock %}
 
 {% block newsletter %}
     {% if not current_user|is_subscribed %}
@@ -93,10 +91,8 @@
                             <form action="{{ url_for('users.subscribe') }}" method="POST">
                                 {{ subscription_form.hidden_tag() }}
                                 <div class="input-group mb-3 mt-3">
-                                    <!-- <input type="text" class="form-control" value="{{ current_user.email }}" placeholder="Email address" aria-label="Email address"> -->
-                                    {{ subscription_form.email(class="form-control", value=current_user.email, placeholder="Email address") }}
+                                    {{ subscription_form.email(type="email", class="form-control", value=current_user.email, placeholder="Email address") }}
                                     <span class="input-group-btn">
-                                        <!-- <button class="btn btn-secondary" type="button">Subscribe</button> -->
                                         {{ subscription_form.submit(class="btn btn-secondary") }}
                                     </span>
                                 </div>
@@ -107,103 +103,100 @@
             </div>
         </div>
     {% endif %}
-
 {% endblock %}
 
-  {% block instagram %}
-      <div class="site-instagram">
-    <div class="action">
-      <a class="btn btn-light" href="#">
-        Follow us @ Instagram
-      </a>
-    </div>
-    <div class="row no-gutters">
-      <div class="col-sm-6">
-        <div class="row no-gutters">
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/1.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/2.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/3.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/4.jpg') }}" alt="" />
-            </a>
-          </div>
+    {% block instagram %}
+        <div class="site-instagram">
+            <div class="action">
+                <a class="btn btn-light" href="#">
+                Follow us @ Instagram
+                </a>
+            </div>
+            <div class="row no-gutters">
+                <div class="col-sm-6">
+                    <div class="row no-gutters">
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/1.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/2.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/3.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/4.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="row no-gutters">
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/5.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/6.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/7.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                        <div class="col-3">
+                            <a class="photo" href="#">
+                            <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/8.jpg') }}" alt="" />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="col-sm-6">
-        <div class="row no-gutters">
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/5.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/6.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/7.jpg') }}" alt="" />
-            </a>
-          </div>
-          <div class="col-3">
-            <a class="photo" href="#">
-              <img class="img-fluid" src="{{ url_for('static', filename='img/instagram/8.jpg') }}" alt="" />
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-  {% endblock %}
+    {% endblock %}
 
-  {% block footer %}
-      <footer class="site-footer bg-darkest">
-    <div class="container">
-
-      <ul class="nav justify-content-center">
-        <li class="nav-item">
-          <a class="nav-link" href="#">Privacy policy</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Terms</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Feedback</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Advertise</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">Contact</a>
-        </li>
-      </ul>
-      <div class="copy">
-        &copy; Milo 2019<br />
-        All rights reserved
-      </div>
-    </div>
-  </footer>
-  {% endblock %}
+    {% block footer %}
+        <footer class="site-footer bg-darkest">
+            <div class="container">
+                <ul class="nav justify-content-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Privacy policy</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Terms</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Feedback</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Advertise</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                </ul>
+                <div class="copy">
+                    &copy; Milo 2019<br />
+                    All rights reserved
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
 
   {% block scripts %}
       <script src="{{ url_for('static', filename='js/app.js') }}"></script>
       <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
   {% endblock %}
 
 </body>

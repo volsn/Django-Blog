@@ -4,7 +4,7 @@ from flask_admin import Admin, AdminIndexView
 from flask_admin.contrib.sqla import ModelView
 from miloblog import app, db
 from miloblog.models import BlogPost, User, Comment,\
-    NewsletterSubscription, UserStatus
+    NewsletterSubscription, UserStatus, Message
 
 
 class MyAdminIndexView(AdminIndexView):
@@ -45,9 +45,14 @@ class CommentModelView(LoginRequiredModelView):
     column_filters = ['approved']
 
 
+class MessageModelView(LoginRequiredModelView):
+    column_exclude_list = ['message']
+
+
 admin = Admin(app, name='Milø.admin', template_mode='bootstrap4', index_view=MyAdminIndexView())
 
 admin.add_view(BlogPostModelView(BlogPost, db.session))
 admin.add_view(UserModelView(User, db.session))
 admin.add_view(CommentModelView(Comment, db.session))
 admin.add_view(LoginRequiredModelView(NewsletterSubscription, db.session))
+admin.add_view(MessageModelView(Message, db.session))

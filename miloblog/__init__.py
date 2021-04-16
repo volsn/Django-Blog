@@ -23,6 +23,24 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'users.login'
 
 
+# Templates
+from miloblog.models import UserStatus, BlogCategory, BlogPost
+from miloblog.users.forms import SubscribeForm
+
+
+@app.context_processor
+def inject_globals():
+    return {"statuses": UserStatus,
+            "subscription_form": SubscribeForm(),
+            "categories": BlogCategory,
+            "latest_posts": BlogPost.query.order_by(BlogPost.date.desc()).limit(2)}
+
+
+@app.template_filter()
+def is_admin(user):
+    return user.is_authenticated and user.status == UserStatus.admin
+
+
 # Blueprints
 from miloblog.core.views import core
 from miloblog.blog_posts.views import blogs

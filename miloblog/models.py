@@ -17,7 +17,7 @@ class BlogCategory(enum.Enum):
 class UserStatus(enum.Enum):
     active = 'active'
     banned = 'banned'
-    admin = 'admin_'
+    admin = 'admin'
 
 
 @login_manager.user_loader
@@ -97,3 +97,17 @@ class NewsletterSubscription(db.Model):
 
     def __repr__(self):
         return self.email
+
+
+class Message(db.Model):
+
+    __tablename__ = 'message'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+    company = db.Column(db.String(128), nullable=True)
+    email = db.Column(db.String(128), nullable=False)
+    message = db.Column(db.Text(), nullable=False)
+
+    def __repr__(self):
+        return self.name
