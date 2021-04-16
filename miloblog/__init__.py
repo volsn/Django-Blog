@@ -33,3 +33,6 @@ app.register_blueprint(core)
 app.register_blueprint(blogs)
 app.register_blueprint(users)
 app.register_blueprint(error_pages)
+
+# Start admin
+from miloblog.admin import admin

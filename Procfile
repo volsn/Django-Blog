@@ -1,1 +1,1 @@
-web: gunicorn app:app debug:True
+web: gunicorn app:app

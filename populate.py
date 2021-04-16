@@ -49,15 +49,15 @@ fake = Faker()
 
 # Admin user
 admin = User(email='boss@mail.com',
-             username='admin',
+             username='admin_',
              password='bigboss')
-admin.profile_image = 'admin.png'
+admin.profile_image = 'admin_.png'
 admin.status = UserStatus.admin
 db.session.add(admin)
 db.session.commit()
 
 profile_pics = [file for file in os.listdir('miloblog/static/profile_pics')
-                if file != 'admin.png' and (file.endswith(('.jpg', '.jpeg', '.png',)))]
+                if file != 'admin_.png' and (file.endswith(('.jpg', '.jpeg', '.png',)))]
 for _ in range(N_USERS):
     profile = fake.simple_profile()
     user = User(email=profile['mail'],

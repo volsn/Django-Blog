@@ -17,7 +17,7 @@ class BlogCategory(enum.Enum):
 class UserStatus(enum.Enum):
     active = 'active'
     banned = 'banned'
-    admin = 'admin'
+    admin = 'admin_'
 
 
 @login_manager.user_loader

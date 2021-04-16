@@ -6,6 +6,7 @@
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/origin" />
+      <excludeFolder url="file://$MODULE_DIR$/miloblog/templates/admin_" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.9 (fucked-up-flask) (2)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
@@ -19,6 +20,7 @@
         <option value="$MODULE_DIR$/miloblog/templates/error_pages" />
         <option value="$MODULE_DIR$/miloblog/templates/core" />
         <option value="$MODULE_DIR$/miloblog/templates/users" />
+        <option value="$MODULE_DIR$/miloblog/templates/admin" />
       </list>
     </option>
   </component>
