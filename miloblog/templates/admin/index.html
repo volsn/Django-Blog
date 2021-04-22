@@ -1,9 +1,54 @@
-{% extends 'admin/master.html' %}
+{% extends 'admin/base.html' %}
+
+{% block custom_styles %}
+    <style>
+        .shortcuts
+        {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        .shortcut
+        {
+            width: 20%;
+            height: 100px;
+        }
+
+        .shortcut i
+        {
+            margin-top: 20%;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
     <div class="container">
+        {% if messages_count != 0 %}
+            <div class="alert alert-primary" role="alert">
+                You have {{ messages_count }} unread messages.
+            </div>
+        {% endif %}
         <div class="jumbotron">
             <h1>Welcome to the admin page</h1>
+            <br>
+            <br>
+
+            <div class="shortcuts">
+                <a href="{{ url_for('blogpost.create_view') }}" class="btn btn-primary btn-lg shortcut">
+                    <i class="fa fa-newspaper"> New Post</i>
+                </a>
+                <a href="#" class="btn btn-success btn-lg shortcut">
+                    <i class="fa fa-envelope"> Write Email</i>
+                </a>
+                <a href="{{ url_for('newslettersubscription.details_view') }}" class="btn btn-danger btn-lg shortcut">
+                    <i class="fa fa-comment-alt"> View Messages</i>
+                </a>
+                <a href="#" class="btn btn-warning btn-lg shortcut">
+                    <i class="fa fa-edit"> Edit Profile</i>
+                </a>
+            </div>
         </div>
+
     </div>
 {% endblock %}

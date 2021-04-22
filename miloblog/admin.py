@@ -9,12 +9,18 @@ from miloblog.models import BlogPost, User, Comment,\
 
 class MyAdminIndexView(AdminIndexView):
 
+    extra_css = ['css/fontawesome.css']
+
     def is_accessible(self):
         return current_user.is_authenticated and current_user.status == UserStatus.admin
 
     def inaccessible_callback(self, name, **kwargs):
         # redirect to login page if user doesn't have access
         return redirect(url_for('users.login', next=request.url))
+
+    def render(self, template, **kwargs):
+        kwargs['messages_count'] = Message.query.filter_by(read=False).count()
+        return super().render(template, **kwargs)
 
 
 class LoginRequiredModelView(ModelView):
@@ -46,6 +52,7 @@ class CommentModelView(LoginRequiredModelView):
 
 
 class MessageModelView(LoginRequiredModelView):
+    can_view_details = True
     column_exclude_list = ['message']
 
 

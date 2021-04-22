@@ -108,6 +108,7 @@ class Message(db.Model):
     company = db.Column(db.String(128), nullable=True)
     email = db.Column(db.String(128), nullable=False)
     message = db.Column(db.Text(), nullable=False)
+    read = db.Column(db.Boolean(), nullable=False, default=False)
 
     def __repr__(self):
         return self.name

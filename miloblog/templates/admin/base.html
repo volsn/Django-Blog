@@ -11,6 +11,8 @@
         <meta name="description" content="">
         <meta name="author" content="">
     {% endblock %}
+    {% block summernote %}
+    {% endblock %}
     {% block head_css %}
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/swatch/{swatch}/bootstrap.min.css'.format(swatch=config.get('FLASK_ADMIN_SWATCH', 'default')), v='4.2.1') }}"
               rel="stylesheet">
@@ -21,7 +23,7 @@
         <link href="{{ admin_static.url(filename='bootstrap/bootstrap4/css/font-awesome.min.css', v='4.7.0') }}" rel="stylesheet">
         {% if admin_view.extra_css %}
           {% for css_url in admin_view.extra_css %}
-            <link href="{{ css_url }}" rel="stylesheet">
+            <link href="{{ url_for('static', filename=css_url) }}" rel="stylesheet">
           {% endfor %}
         {% endif %}
         <style>
@@ -33,6 +35,8 @@
     {% block head %}
     {% endblock %}
     {% block head_tail %}
+    {% endblock %}
+    {% block custom_styles %}
     {% endblock %}
   </head>
 <body>

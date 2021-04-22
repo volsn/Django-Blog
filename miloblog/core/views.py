@@ -40,3 +40,8 @@ def contact():
 
     return render_template('core/contact.html',
                            form=form)
+
+
+@core.route('/editor')
+def editor():
+    return render_template('editor.html')
