@@ -5,10 +5,6 @@ __pycache__/
 # Mac OS Files
 .DS_Store
 
-# SQL Files
-*.sqlite
-*.sqlite3
-
 # IDE Files
 .idea/
 
