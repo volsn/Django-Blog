@@ -54,6 +54,7 @@ class CommentModelView(LoginRequiredModelView):
 class MessageModelView(LoginRequiredModelView):
     can_view_details = True
     column_exclude_list = ['message']
+    column_filters = ['read']
 
 
 admin = Admin(app, name='Milø.admin', template_mode='bootstrap4', index_view=MyAdminIndexView())
