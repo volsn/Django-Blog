@@ -1,4 +1,4 @@
-# Blog Pet Project built with Django framework.
+# Blog Pet Project built with Flask framework.
 
 [![Build Status](https://travis-ci.com/volsn/epam-final-project.svg?branch=master)](https://travis-ci.com/volsn/Django-Blog)
 
